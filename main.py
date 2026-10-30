@@ -30,6 +30,21 @@ def add_note(notes, text):
     save_notes(notes)
 
 
+def delete_note(notes, number):
+    """Удаляет заметку по номеру (нумерация с 1)."""
+    if not 1 <= number <= len(notes):
+        raise ValueError("Заметки с таким номером нет")
+    removed = notes.pop(number - 1)
+    save_notes(notes)
+    return removed
+
+
+def search_notes(notes, query):
+    """Возвращает заметки, содержащие строку query (без учёта регистра)."""
+    query = query.lower()
+    return [text for text in notes if query in text.lower()]
+
+
 def show_notes(notes):
     """Выводит список заметок с номерами."""
     if not notes:
@@ -38,19 +53,27 @@ def show_notes(notes):
         print(f"{number}. {text}")
 
 
+MENU = "1 — добавить, 2 — список, 3 — удалить, 4 — поиск, 0 — выход: "
+
+
 def main():
     notes = load_notes()
     while True:
-        choice = input("1 — добавить, 2 — список, 0 — выход: ").strip()
-        if choice == "1":
-            try:
+        choice = input(MENU).strip()
+        try:
+            if choice == "1":
                 add_note(notes, input("Текст заметки: "))
-            except ValueError as error:
-                print(error)
-        elif choice == "2":
-            show_notes(notes)
-        elif choice == "0":
-            break
+            elif choice == "2":
+                show_notes(notes)
+            elif choice == "3":
+                removed = delete_note(notes, int(input("Номер: ")))
+                print(f"Удалено: {removed}")
+            elif choice == "4":
+                show_notes(search_notes(notes, input("Найти: ")))
+            elif choice == "0":
+                break
+        except ValueError as error:
+            print(error)
 
 
 if __name__ == "__main__":
